@@ -988,7 +988,10 @@ module cve2_id_stage #(
         RF_WD_CSR,
         RF_WD_COPROC})
     `ASSERT(CVE2XifResultHartIdValid, x_result_valid_i |-> (x_result_i.hartid == hart_id_i))
-    `ASSERT(CVE2XifResultInstrIdValid, x_result_valid_i |-> gen_xif.scoreboard_q[x_result_i.id])
+    `ASSERT(CVE2XifResultInstrIdValid, x_result_valid_i |->
+        (gen_xif.scoreboard_q[x_result_i.id] ||
+         (x_issue_valid_o && x_issue_ready_i && x_issue_resp_i.accept &&
+          (x_issue_req_o.id == x_result_i.id))))
     `ASSERT_FINAL(CVE2XifInstrInflightPending, gen_xif.scoreboard_q === '0)
   end
   else begin : no_gen_asserts_xif
